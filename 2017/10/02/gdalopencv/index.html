@@ -55,7 +55,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo,shareSDK," />
+  <meta name="keywords" content="OpenCV,GDAL," />
 
 
 
@@ -71,18 +71,18 @@
 
 
 
-<meta name="description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
-<meta name="keywords" content="Hexo,shareSDK">
+<meta name="description" content="需求分析作为图像处理的界的dalao:OpenCV一直都是个中翘楚，它对图像的矩阵抽象使得一些算法和功能都日益成熟。但是对于大型数据源；遥感影像，他就支持的没有那么好，我遇到的问题就是要将一副遥感影像读取到OpenCV的格式化，这样就能够集两者之所长做一些事了。 GDAL要做些什么网上有李民录大神写过的基于OpenCV1的构建Iplimg，这样可以支持单波段或者三波段，也有版本是基于OpenCV2">
+<meta name="keywords" content="OpenCV,GDAL">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
-<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/09/30/share/index.html">
+<meta property="og:title" content="OpenCV显示GDAL读取的影像数据（16bit）">
+<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/10/02/gdalopencv/index.html">
 <meta property="og:site_name" content="该用户已注册">
-<meta property="og:description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
+<meta property="og:description" content="需求分析作为图像处理的界的dalao:OpenCV一直都是个中翘楚，它对图像的矩阵抽象使得一些算法和功能都日益成熟。但是对于大型数据源；遥感影像，他就支持的没有那么好，我遇到的问题就是要将一副遥感影像读取到OpenCV的格式化，这样就能够集两者之所长做一些事了。 GDAL要做些什么网上有李民录大神写过的基于OpenCV1的构建Iplimg，这样可以支持单波段或者三波段，也有版本是基于OpenCV2">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-01T02:44:10.000Z">
+<meta property="og:updated_time" content="2017-10-02T13:05:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
-<meta name="twitter:description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
+<meta name="twitter:title" content="OpenCV显示GDAL读取的影像数据（16bit）">
+<meta name="twitter:description" content="需求分析作为图像处理的界的dalao:OpenCV一直都是个中翘楚，它对图像的矩阵抽象使得一些算法和功能都日益成熟。但是对于大型数据源；遥感影像，他就支持的没有那么好，我遇到的问题就是要将一副遥感影像读取到OpenCV的格式化，这样就能够集两者之所长做一些事了。 GDAL要做些什么网上有李民录大神写过的基于OpenCV1的构建Iplimg，这样可以支持单波段或者三波段，也有版本是基于OpenCV2">
 
 
 
@@ -112,13 +112,13 @@
 
 
 
-  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/09/30/share/"/>
+  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/10/02/gdalopencv/"/>
 
 
 
 
 
-  <title>Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享 | 该用户已注册</title>
+  <title>OpenCV显示GDAL读取的影像数据（16bit） | 该用户已注册</title>
   
 
 
@@ -235,7 +235,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/09/30/share/">
+    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/10/02/gdalopencv/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Tao Jianhao">
@@ -252,7 +252,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</h1>
+          <h1 class="post-title" itemprop="name headline">OpenCV显示GDAL读取的影像数据（16bit）</h1>
         
 
         <div class="post-meta">
@@ -264,8 +264,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-30T23:20:25+08:00">
-                2017-09-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-02T20:31:44+08:00">
+                2017-10-02
               </time>
             
 
@@ -287,8 +287,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hexo/" itemprop="url" rel="index">
-                    <span itemprop="name">Hexo</span>
+                  <a href="/categories/OpenCV/" itemprop="url" rel="index">
+                    <span itemprop="name">OpenCV</span>
                   </a>
                 </span>
 
@@ -304,7 +304,7 @@
 
           
           
-             <span id="/2017/09/30/share/" class="leancloud_visitors" data-flag-title="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
+             <span id="/2017/10/02/gdalopencv/" class="leancloud_visitors" data-flag-title="OpenCV显示GDAL读取的影像数据（16bit）">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -335,11 +335,11 @@
       
 
       
-        <h1 id="Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享"><a href="#Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享" class="headerlink" title="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享"></a>Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</h1><p>之前按照相关<a href="http://www.aoshizhang.com/2016/04/add-sharesdk/" target="_blank" rel="external">技术博客</a>指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使<code>hexo clean</code> <code>hexo d -g</code>多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。<br>而后搜索问题是看到了这些表述：<br><a href="http://blog.csdn.net/cl534854121/article/details/76121105" target="_blank" rel="external">百度分享在https中的使用</a>,博主在其中提到了：“百度分享不能使用的主要原因是它会去请求http中的资源，一个share.js，既然这样，我们能想到的就是把这个资源放到非http上，或者干脆直接放到我们自己的目录下面。”<br>那么我就联想到当初配置shareSDK的时候，似乎也是在以HTTPS的协议博客中去请求了HTTP协议下的mob-share.js:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&lt;!--MOB SHARE BEGIN--&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-button -mob-share-open&quot;&gt;分享&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui&quot; style=&quot;display: none&quot;&gt;</div><div class="line">&lt;ul class=&quot;-mob-share-list&quot;&gt;</div><div class="line">&lt;li class=&quot;-mob-share-weibo&quot;&gt;&lt;p&gt;新浪微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-tencentweibo&quot;&gt;&lt;p&gt;腾讯微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qzone&quot;&gt;&lt;p&gt;QQ空间&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qq&quot;&gt;&lt;p&gt;QQ好友&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-renren&quot;&gt;&lt;p&gt;人人网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-kaixin&quot;&gt;&lt;p&gt;开心网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-douban&quot;&gt;&lt;p&gt;豆瓣&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-facebook&quot;&gt;&lt;p&gt;Facebook&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-twitter&quot;&gt;&lt;p&gt;Twitter&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line">&lt;div class=&quot;-mob-share-close&quot;&gt;取消&lt;/div&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-bg&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script id=&quot;-mob-share&quot; src=&quot;http://f1.webshare.mob.com/code/mob-share.js?appkey=你的appkey&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;!--MOB SHARE END--&gt;</div></pre></td></tr></table></figure></p>
-<hr>
-<p>嗯。找到了问题的根源了，该怎么解决呢？一般认为HTTPS去请求HTTP是一种不安全的行为吧，但在个人博客里，安全性并不做太多考虑了，所以我就想强制访问了。最简单的访问方式就是把<code>src=&quot;https://XXXXXX.js   &quot;</code>改成了<code>src=&quot;//XXXXXX.js   &quot;</code>,这样就使得发布后的博客仍然能请求到js资源，从而实现分享功能了。</p>
-<p>修改后的sharesdk.swig是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&lt;!--MOB SHARE BEGIN--&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-button -mob-share-open&quot;&gt;分享&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui&quot; style=&quot;display: none&quot;&gt;</div><div class="line">&lt;ul class=&quot;-mob-share-list&quot;&gt;</div><div class="line">&lt;li class=&quot;-mob-share-weibo&quot;&gt;&lt;p&gt;新浪微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-tencentweibo&quot;&gt;&lt;p&gt;腾讯微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qzone&quot;&gt;&lt;p&gt;QQ空间&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qq&quot;&gt;&lt;p&gt;QQ好友&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-renren&quot;&gt;&lt;p&gt;人人网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-kaixin&quot;&gt;&lt;p&gt;开心网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-douban&quot;&gt;&lt;p&gt;豆瓣&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-facebook&quot;&gt;&lt;p&gt;Facebook&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-twitter&quot;&gt;&lt;p&gt;Twitter&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line">&lt;div class=&quot;-mob-share-close&quot;&gt;取消&lt;/div&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-bg&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script id=&quot;-mob-share&quot; src=&quot;//f1.webshare.mob.com/code/mob-share.js?appkey=&#123;&#123; theme.shareSDKappkey &#125;&#125;&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">&lt;!--MOB SHARE END--&gt;</div></pre></td></tr></table></figure></p>
-<p>这样hexo d发布的博客分享功能就正常了。</p>
+        <h2 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h2><p>作为图像处理的界的dalao:<code>OpenCV</code>一直都是个中翘楚，它对图像的矩阵抽象<br>使得一些算法和功能都日益成熟。但是对于大型数据源；遥感影像，他就支持的没有那么好，我遇到的问题就是要将一副遥感影像读取到OpenCV的格式化，这样就能够集两者之所长做一些事了。</p>
+<h2 id="GDAL要做些什么"><a href="#GDAL要做些什么" class="headerlink" title="GDAL要做些什么"></a>GDAL要做些什么</h2><p>网上有李民录大神写过的基于OpenCV1的构建Iplimg，这样可以支持单波段或者三波段，也有版本是基于OpenCV2版本，构建cvmat之后再拷贝到mat,当然最好的还是直接初始化为mat,并且支持多波段。</p>
+<h2 id="OpenCV的Mat格式"><a href="#OpenCV的Mat格式" class="headerlink" title="OpenCV的Mat格式"></a>OpenCV的Mat格式</h2><p>这里还需要注意一个问题，很多OpenCV的函数支持的数据深度只有8位和32位的，所以要少使用CV_64F，但是vs的编译器又会把float数据自动变成double型。这里的函数就是会遇到我要使用的imshow(),因此要show的话就要对数据进行处理</p>
+<h2 id="解决步骤"><a href="#解决步骤" class="headerlink" title="解决步骤"></a>解决步骤</h2><p>我的tif 影像通过gdalinfo ,可得到一下信息：数据共有四波段，数据类型是16U类型，那么过程就是将RGB三波段分别读取，分别存到mat类型的向量容器里，然后存好待用。</p>
+<p>到了显示环节，先把这相对分离的Mat进行merge操作，因为是16U数据要进行映射到8U，网上有相关博客:<a href="http://blog.csdn.net/yangcong1234/article/details/47950597" target="_blank" rel="external">Opencv 16位深度图片显示并保存</a>介绍了操作，因为涉及到了Iplimg,cvmat,mat类型的不停互转，我直接用了OpenCV3的新函数<code>normalize()</code>进行归一化。这样将它映射到256内，之后就可以进行<code>imshow</code>了。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment">    遥感影像通常是TIFF数据，OPENCV读取TIFF会出问题，所以采用了先用GDAL读取数据以及影像信息，</span></div><div class="line"><span class="comment">再转换为OPENCV的Mat类型，这样结合了GDAL强大的支持多种数据格式的能力，又能方便地调用OPENCV的算法函数。</span></div><div class="line"><span class="comment">思路就是：根据文件名获得其GDALDataset数据集，然后分波段（波段相当于通道）存储在格式为Vector&lt;cv::Mat&gt;的容器内，</span></div><div class="line"><span class="comment">最后利用MAT的Merge函数，对通道数据进行组合。以上方法适合任意波段数据，对多通道影像，如遥感影像中多光谱和高光谱数据比较实用。</span></div><div class="line"><span class="comment">*/</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv2/highgui/highgui.hpp&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;gdal_priv.h&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;cpl_conv.h&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    Mat srcimg;</div><div class="line">    GDALDataset *poDataset;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pszFilename= <span class="string">"../IMG1.TIF"</span>;</div><div class="line">    <span class="comment">//使用前需要先进行注册驱动</span></div><div class="line">    GDALAllRegister();</div><div class="line">    poDataset = (GDALDataset*)GDALOpen(pszFilename,GA_ReadOnly);</div><div class="line">    <span class="comment">//获取影像的宽高，波段数</span></div><div class="line">    <span class="keyword">int</span> width = poDataset-&gt;GetRasterXSize();</div><div class="line">    <span class="keyword">int</span> height = poDataset-&gt;GetRasterYSize();</div><div class="line">    <span class="keyword">int</span> nband = poDataset-&gt;GetRasterCount();</div><div class="line"></div><div class="line">    GDALRasterBand *bandData;</div><div class="line">    <span class="keyword">float</span> *p = <span class="keyword">new</span> <span class="keyword">float</span>[width*height];</div><div class="line">    <span class="built_in">vector</span>&lt;Mat&gt; imagesT;</div><div class="line"></div><div class="line">    <span class="comment">//遍历波段，读取到mat向量容器里</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = nband<span class="number">-1</span>;i&gt;<span class="number">0</span>;i--)</div><div class="line">    &#123;</div><div class="line">        bandData = poDataset-&gt;GetRasterBand(i);</div><div class="line">        GDALDataType DataType = bandData-&gt;GetRasterDataType();</div><div class="line">        bandData-&gt;RasterIO(GF_Read,<span class="number">0</span>,<span class="number">0</span>,width,height,p,width,height,DataType ,<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">        <span class="function">Mat <span class="title">HT</span><span class="params">(height,width,CV_16U,p)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">//        Mat show(HT.size(),CV_8UC1);</span></div><div class="line"><span class="comment">//        normalize(HT,show,0,255,CV_MINMAX);</span></div><div class="line"><span class="comment">//        show.convertTo(show,CV_8U);</span></div><div class="line"><span class="comment">//        namedWindow("nband",CV_WINDOW_AUTOSIZE);</span></div><div class="line"><span class="comment">//        imshow("nband",show);</span></div><div class="line"></div><div class="line">        imagesT.push_back(HT.clone());</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//多通道融合</span></div><div class="line">    Mat Timg;</div><div class="line">    Timg.create(width,height,CV_16UC3);</div><div class="line">    merge(imagesT,Timg);</div><div class="line"></div><div class="line">    <span class="comment">//进行归一化，映射到0-255</span></div><div class="line">    Mat result(Timg.size(),CV_8UC3);</div><div class="line">    normalize(Timg,result,<span class="number">0</span>,<span class="number">255</span>,CV_MINMAX);</div><div class="line">    result.convertTo(result,CV_8U);</div><div class="line">    namedWindow(<span class="string">"result"</span>,CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(<span class="string">"result"</span>,result);</div><div class="line">    imwrite(<span class="string">"output.jpg"</span>,result);</div><div class="line"></div><div class="line">    GDALClose((GDALDatasetH)poDataset);</div><div class="line">    imagesT.clear();</div><div class="line"></div><div class="line">    cv::waitKey(<span class="number">0</span>);</div><div class="line">    <span class="built_in">std</span>::system(<span class="string">"pause"</span>);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -386,9 +386,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Hexo/" rel="tag"><i class="fa fa-tag"></i> Hexo</a>
+            <a href="/tags/OpenCV/" rel="tag"><i class="fa fa-tag"></i> OpenCV</a>
           
-            <a href="/tags/shareSDK/" rel="tag"><i class="fa fa-tag"></i> shareSDK</a>
+            <a href="/tags/GDAL/" rel="tag"><i class="fa fa-tag"></i> GDAL</a>
           
         </div>
       
@@ -401,8 +401,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/25/测试一下呗/" rel="next" title="陶剑浩的demo">
-                <i class="fa fa-chevron-left"></i> 陶剑浩的demo
+              <a href="/2017/10/02/20171002/" rel="next" title="二零一七十月二号">
+                <i class="fa fa-chevron-left"></i> 二零一七十月二号
               </a>
             
           </div>
@@ -410,10 +410,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/09/30/2/" rel="prev" title="Mac环境下clion配置GDAL库——cmakelist.txt怎么写">
-                Mac环境下clion配置GDAL库——cmakelist.txt怎么写 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -607,7 +603,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享"><span class="nav-number">1.</span> <span class="nav-text">Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#需求分析"><span class="nav-number">1.</span> <span class="nav-text">需求分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GDAL要做些什么"><span class="nav-number">2.</span> <span class="nav-text">GDAL要做些什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenCV的Mat格式"><span class="nav-number">3.</span> <span class="nav-text">OpenCV的Mat格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决步骤"><span class="nav-number">4.</span> <span class="nav-text">解决步骤</span></a></li></ol></div>
             
 
           </div>
