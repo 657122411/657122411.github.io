@@ -55,7 +55,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="环境配置,cmakelist," />
+  <meta name="keywords" content="扯," />
 
 
 
@@ -71,18 +71,18 @@
 
 
 
-<meta name="description" content="Clion在Mac环境下是VS的优秀替代品，但是他的环境配置确实没有VS下那种可视化操作界面那么方便，并且相应的参考资料也相对较少。就拿这次搭建GDAL的环境来说就比VS的添加库添加头文件等操作要感觉难易上手。 实际上当熟练掌握了cmakelist怎么写了以后就会觉得配置的效果反而会更加快捷。这里插一个包管理工具——homebrew。对于macOS下的开发环境搭建，这绝对算得上一大杀器。同样是针对">
-<meta name="keywords" content="环境配置,cmakelist">
+<meta name="description" content="今年的假期似乎一点也不像假期，虽然早就没做啥安排，但感觉还是有点想出去玩却玩不动的感觉。在寝室睡睡觉敲些什么的，顺便还追了十万个冷笑话的番，玩了几把三国杀。本来想回家的但家也不想回了。 总是用围城围城理论来说，当年一起考研的嘉浩哥一遍遍的说着学生时代的好，但看他进来工作的状态也挺不错的吧。说起来研究生生活正式开始也有一个月了（虽然暑假就留了校，但那时心态还是没打心底承认已经开始研究生学习了）。这一">
+<meta name="keywords" content="扯">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mac环境下clion配置GDAL库——cmakelist.txt怎么写">
-<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/09/30/2/index.html">
+<meta property="og:title" content="二零一七十月二号">
+<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/10/02/20171002/index.html">
 <meta property="og:site_name" content="该用户已注册">
-<meta property="og:description" content="Clion在Mac环境下是VS的优秀替代品，但是他的环境配置确实没有VS下那种可视化操作界面那么方便，并且相应的参考资料也相对较少。就拿这次搭建GDAL的环境来说就比VS的添加库添加头文件等操作要感觉难易上手。 实际上当熟练掌握了cmakelist怎么写了以后就会觉得配置的效果反而会更加快捷。这里插一个包管理工具——homebrew。对于macOS下的开发环境搭建，这绝对算得上一大杀器。同样是针对">
+<meta property="og:description" content="今年的假期似乎一点也不像假期，虽然早就没做啥安排，但感觉还是有点想出去玩却玩不动的感觉。在寝室睡睡觉敲些什么的，顺便还追了十万个冷笑话的番，玩了几把三国杀。本来想回家的但家也不想回了。 总是用围城围城理论来说，当年一起考研的嘉浩哥一遍遍的说着学生时代的好，但看他进来工作的状态也挺不错的吧。说起来研究生生活正式开始也有一个月了（虽然暑假就留了校，但那时心态还是没打心底承认已经开始研究生学习了）。这一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-01T02:43:27.000Z">
+<meta property="og:updated_time" content="2017-10-02T10:29:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Mac环境下clion配置GDAL库——cmakelist.txt怎么写">
-<meta name="twitter:description" content="Clion在Mac环境下是VS的优秀替代品，但是他的环境配置确实没有VS下那种可视化操作界面那么方便，并且相应的参考资料也相对较少。就拿这次搭建GDAL的环境来说就比VS的添加库添加头文件等操作要感觉难易上手。 实际上当熟练掌握了cmakelist怎么写了以后就会觉得配置的效果反而会更加快捷。这里插一个包管理工具——homebrew。对于macOS下的开发环境搭建，这绝对算得上一大杀器。同样是针对">
+<meta name="twitter:title" content="二零一七十月二号">
+<meta name="twitter:description" content="今年的假期似乎一点也不像假期，虽然早就没做啥安排，但感觉还是有点想出去玩却玩不动的感觉。在寝室睡睡觉敲些什么的，顺便还追了十万个冷笑话的番，玩了几把三国杀。本来想回家的但家也不想回了。 总是用围城围城理论来说，当年一起考研的嘉浩哥一遍遍的说着学生时代的好，但看他进来工作的状态也挺不错的吧。说起来研究生生活正式开始也有一个月了（虽然暑假就留了校，但那时心态还是没打心底承认已经开始研究生学习了）。这一">
 
 
 
@@ -112,13 +112,13 @@
 
 
 
-  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/09/30/2/"/>
+  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/10/02/20171002/"/>
 
 
 
 
 
-  <title>Mac环境下clion配置GDAL库——cmakelist.txt怎么写 | 该用户已注册</title>
+  <title>二零一七十月二号 | 该用户已注册</title>
   
 
 
@@ -235,7 +235,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/09/30/2/">
+    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/10/02/20171002/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Tao Jianhao">
@@ -252,7 +252,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Mac环境下clion配置GDAL库——cmakelist.txt怎么写</h1>
+          <h1 class="post-title" itemprop="name headline">二零一七十月二号</h1>
         
 
         <div class="post-meta">
@@ -264,8 +264,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-30T23:38:53+08:00">
-                2017-09-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-02T17:58:19+08:00">
+                2017-10-02
               </time>
             
 
@@ -287,8 +287,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/GDAL/" itemprop="url" rel="index">
-                    <span itemprop="name">GDAL</span>
+                  <a href="/categories/杂文/" itemprop="url" rel="index">
+                    <span itemprop="name">杂文</span>
                   </a>
                 </span>
 
@@ -304,7 +304,7 @@
 
           
           
-             <span id="/2017/09/30/2/" class="leancloud_visitors" data-flag-title="Mac环境下clion配置GDAL库——cmakelist.txt怎么写">
+             <span id="/2017/10/02/20171002/" class="leancloud_visitors" data-flag-title="二零一七十月二号">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -335,11 +335,12 @@
       
 
       
-        <p>Clion在Mac环境下是VS的优秀替代品，但是他的环境配置确实没有VS下那种可视化操作界面那么方便，并且相应的参考资料也相对较少。就拿这次搭建GDAL的环境来说就比VS的添加库添加头文件等操作要感觉难易上手。</p>
-<p>实际上当熟练掌握了cmakelist怎么写了以后就会觉得配置的效果反而会更加快捷。这里插一个包管理工具——<code>homebrew</code>。对于macOS下的开发环境搭建，这绝对算得上一大杀器。同样是针对图像处理的环境搭建，OpenCV就相对来说友好了许多，在执行了<code>brew install opencv</code>后，它就已将OpenCV相关内容进行了系统变量的配置（也有可能需要一步sudo XXXXXX,一般在homebrew操作完成后他就会给出提示），在新建OpenCV的demo程序时，只需要<code>find_package（OpenCV required）</code>，就能嗅探到环境变量，之后的就是常规的<code>include_directories</code>。。。<code>target_link_libraries</code>。。。可以进文件目录<code>/usr/local/cellar/opencv/XXX/share</code>看到已经有了<code>OpenCVconfig.cmakelist</code>。很好很强大。</p>
-<p>但是同样作为一个brew list 中的一个库，GDAL就没有那么好的待遇了。在share文件里没有写好的cmakelist给系统辨认，那么find_package久不那么好用了。这样就需要自己写：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">cmakelist.txt:</div><div class="line"></div><div class="line">cmake_minimum_required(VERSION <span class="number">3.8</span>)</div><div class="line"></div><div class="line">project(gdaldemo)</div><div class="line"></div><div class="line"><span class="built_in">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</div><div class="line"></div><div class="line"><span class="built_in">set</span>(SOURCE_FILES main.cpp)</div><div class="line"></div><div class="line">add_executable(gdaldemo $&#123;SOURCE_FILES&#125;)</div><div class="line"></div><div class="line">include_directories(/usr/local/Cellar/gdal/<span class="number">1.11</span><span class="number">.5</span>_3/include)</div><div class="line"></div><div class="line">link_directories(/usr/local/Cellar/gdal/<span class="number">1.11</span><span class="number">.5</span>_3/include)</div><div class="line"></div><div class="line">target_link_libraries(gdaldemo /usr/local/Cellar/gdal/<span class="number">1.11</span><span class="number">.5</span>_3/lib/libgdal.dylib)</div></pre></td></tr></table></figure></p>
-<p>##总结<br>那么可以总结一下该怎么写cmakelist呢？？基本重要的就那么几个步骤，记录一下以防需要链接另外的第三方库时又变的手足无措。步骤keypoint:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">#添加非标准的库文件搜索路径</div><div class="line"></div><div class="line">LINK_DIRECTORIES(/tmp/lib)</div><div class="line"></div><div class="line">#添加非标准的头文件的搜索路径</div><div class="line"></div><div class="line">INCLUDE_DIRECTORIES(/tmp/include/hello)</div><div class="line"></div><div class="line">#添加可执行文件</div><div class="line"></div><div class="line">ADD_EXECUTABLE(demo main.cpp)</div><div class="line"></div><div class="line">#添加链接库</div><div class="line"></div><div class="line">TARGET_LINK_LIBRARIES(demo libXXX.a)</div></pre></td></tr></table></figure></p>
-<p>这样基本就是配置完成了。因为一直只是学习使用的原因，当具体需要项目打包是怎么连带着打包静态库动态库的步骤还没有研究过XD。</p>
+        <p>今年的假期似乎一点也不像假期，虽然早就没做啥安排，但感觉还是有点想出去玩却玩不动的感觉。在寝室睡睡觉敲些什么的，顺便还追了十万个冷笑话的番，玩了几把三国杀。本来想回家的但家也不想回了。</p>
+<p>总是用围城围城理论来说，当年一起考研的嘉浩哥一遍遍的说着学生时代的好，但看他进来工作的状态也挺不错的吧。说起来研究生生活正式开始也有一个月了（虽然暑假就留了校，但那时心态还是没打心底承认已经开始研究生学习了）。这一个月还是学习一些让人头大的摄影测量和一些第三方库，虽然经常去实验室，但总感觉学习的效率也不见得有多高。我们实验室大半都是些博士师兄，看着几位师兄师姐每日起早摸黑，日益后退的发际线，实在是越发佩服这些在学术上攀登的勇者，我虽然起初就打定了不读博的决算，曾经也看不上学术圈。但接触了这些师兄总感觉学到这种地步绝不是坚持二字就能做到的。</p>
+<p>说起来自己也很久没有出去走动看看了。和几个同学吃饭说起来还是因为一个人的缘故吧。起初搭博客时也是因为找相关文档的时候经常在师兄的博客里能看到对感情生活的感慨吧，这里还要谢谢吴蔚师兄能不厌其烦我的叨扰，因为做的东西有点相像，以后估计还要烦师兄很久XD。。</p>
+<p>想来现在几乎都是以电脑为伴了，特别是我们这种圈子里。我依稀记得复试体检与入学体检的时候，几乎我的同学包括我在内，有一半都会在血压心率监测的环节被医生要求重检，但基本还会偏高，就会要我们做心电尿检什么的。猝死的梗在圈内虽然经常提起，但身体确实是大不如前了。有机会还是要多出去走走，之前还构想假期能出去自驾一下去神农架之类的周边，终究还是作罢了。</p>
+<p>有时看一些朋友同学有了各自的事业家庭，也在反省自己当初大三下还想着直接出去闯荡的，希望自己还是不要后悔自己的决定吧，今天在去食堂吃饭的路上，碰到了一对校友夫妇回来逛校园，听到妻子对丈夫说：在学校还是要做好学习相关的，接触社会后这辈子可能都没有那种心境学习了。</p>
+<p>也是啊，既然就选择自己跳进坑了，虽然和我理想中的研究生生活还是有点差距，但这并不妨碍自己选择该怎么过。老板有老板的想法，希望自己能快速跟上他的步伐，也能帮他做一些事，一些遥感测量的只是我基本是全丢了，但还是要重新去捡一捡，希望不留遗憾吧。</p>
 
       
     </div>
@@ -386,9 +387,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/环境配置/" rel="tag"><i class="fa fa-tag"></i> 环境配置</a>
-          
-            <a href="/tags/cmakelist/" rel="tag"><i class="fa fa-tag"></i> cmakelist</a>
+            <a href="/tags/扯/" rel="tag"><i class="fa fa-tag"></i> 扯</a>
           
         </div>
       
@@ -401,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/30/share/" rel="next" title="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
-                <i class="fa fa-chevron-left"></i> Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享
+              <a href="/2017/10/01/gdal/" rel="next" title="学习GDAL">
+                <i class="fa fa-chevron-left"></i> 学习GDAL
               </a>
             
           </div>
@@ -410,10 +409,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/10/01/gdal/" rel="prev" title="学习GDAL">
-                学习GDAL <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
