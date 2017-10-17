@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="7wz1QEqjYF" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="OpenCV,GDAL," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="16bit的影像数据降位显示之前通过GDAL分波段读取和OpenCV的通道融合归一化操作读取卫星遥感影像实际上还是存在一些问题。因为数据在16bit的状态的时候最大最小也不过2000左右的差值，并且还存在早点。只是简单直接映射到0-255，色调应该是不对的。 通过搜索相关资料，遥感影像在读取之后通常还要进行图像增强。图像增强有不同的算法进行操作。我最开始使用了网上有一种算法，参考链接。这种方法基本">
+<meta name="keywords" content="OpenCV,GDAL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="16bit的影像数据降位显示">
+<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/10/17/16to8/index.html">
+<meta property="og:site_name" content="该用户已注册">
+<meta property="og:description" content="16bit的影像数据降位显示之前通过GDAL分波段读取和OpenCV的通道融合归一化操作读取卫星遥感影像实际上还是存在一些问题。因为数据在16bit的状态的时候最大最小也不过2000左右的差值，并且还存在早点。只是简单直接映射到0-255，色调应该是不对的。 通过搜索相关资料，遥感影像在读取之后通常还要进行图像增强。图像增强有不同的算法进行操作。我最开始使用了网上有一种算法，参考链接。这种方法基本">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-10-17T07:22:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="16bit的影像数据降位显示">
+<meta name="twitter:description" content="16bit的影像数据降位显示之前通过GDAL分波段读取和OpenCV的通道融合归一化操作读取卫星遥感影像实际上还是存在一些问题。因为数据在16bit的状态的时候最大最小也不过2000左右的差值，并且还存在早点。只是简单直接映射到0-255，色调应该是不对的。 通过搜索相关资料，遥感影像在读取之后通常还要进行图像增强。图像增强有不同的算法进行操作。我最开始使用了网上有一种算法，参考链接。这种方法基本">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/10/17/16to8/"/>
+
+
+
+
+
+  <title>16bit的影像数据降位显示 | 该用户已注册</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fd33731430ec82d9f77c123433cac022";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">该用户已注册</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/10/17/16to8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tao Jianhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/chenmeng.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="该用户已注册">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">16bit的影像数据降位显示</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-17T15:20:38+08:00">
+                2017-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GDAL/" itemprop="url" rel="index">
+                    <span itemprop="name">GDAL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/10/17/16to8/" class="leancloud_visitors" data-flag-title="16bit的影像数据降位显示">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="16bit的影像数据降位显示"><a href="#16bit的影像数据降位显示" class="headerlink" title="16bit的影像数据降位显示"></a>16bit的影像数据降位显示</h2><p>之前通过GDAL分波段读取和OpenCV的通道融合归一化操作读取卫星遥感影像实际上还是存在一些问题。因为数据在16bit的状态的时候最大最小也不过2000左右的差值，并且还存在早点。只是简单直接映射到0-255，色调应该是不对的。</p>
+<p>通过搜索相关资料，遥感影像在读取之后通常还要进行图像增强。图像增强有不同的算法进行操作。我最开始使用了网上有一种算法，<a href="http://blog.csdn.net/shenshanxiaozhu/article/details/53224554" target="_blank" rel="external">参考链接</a>。这种方法基本能够起到正常化图像。</p>
+<p>但是在专业的GIS类软件里，往往需要凸显特征地物，他的增强可能就更加明显，我从网上搜索到了envi的拉伸算法，即<a href="http://blog.csdn.net/hukun910903/article/details/49835955" target="_blank" rel="external">2%-98%最小最大值拉伸</a>。通过这样可以结合上次的代码进行改造。就可以正常显示读取的遥感影像了。</p>
+<hr>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/*</span></div><div class="line"><span class="comment">    遥感影像通常是TIFF数据，OPENCV读取TIFF会出问题，所以采用了先用GDAL读取数据以及影像信息，</span></div><div class="line"><span class="comment">再转换为OPENCV的Mat类型，这样结合了GDAL强大的支持多种数据格式的能力，又能方便地调用OPENCV的算法函数。</span></div><div class="line"><span class="comment">思路就是：根据文件名获得其GDALDataset数据集，然后分波段（波段相当于通道）存储在格式为Vector&lt;cv::Mat&gt;的容器内，</span></div><div class="line"><span class="comment">最后利用MAT的Merge函数，对通道数据进行组合。以上方法适合任意波段数据，对多通道影像，如遥感影像中多光谱和高光谱数据比较实用。</span></div><div class="line"><span class="comment">*/</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;opencv2/highgui/highgui.hpp&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;gdal_priv.h&gt;;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="comment">//所谓2%-98%最大最小值拉伸就是先统计图像的灰度直方图，然后计算灰度的累积分布函数，CDF=0.02的时候取值为min,</span></div><div class="line"><span class="comment">// CDF=0.98的时候取值为max,再进行最大最小值拉伸小于min的全部为0，大于max的为255，这样做的好处就是可以把像素值过大或者过小的噪声剔除，</span></div><div class="line"><span class="comment">// 从而可以增强图像的显示效果</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">short</span> ushort;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> uchar;</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">直接最大最小值拉伸，小于最小值的设为0，大于最大值的设为255</span></div><div class="line"><span class="comment">@param pBuf 保存16位影像数据的数组，该数组一般直接由Gdal的RasterIO函数得到</span></div><div class="line"><span class="comment">@param dstBuf 保存8位影像数据的数组，该数组保存拉伸后的8</span></div><div class="line"><span class="comment">@param width 图像的列数</span></div><div class="line"><span class="comment">@param height 图像的行数</span></div><div class="line"><span class="comment">@param minVal 最小值</span></div><div class="line"><span class="comment">@param maxVal 最大值</span></div><div class="line"><span class="comment">*/</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">MinMaxStretch</span><span class="params">(ushort *pBuf,uchar * dstBuf,<span class="keyword">int</span> bufWidth,<span class="keyword">int</span> bufHeight,<span class="keyword">double</span> minVal,<span class="keyword">double</span> maxVal)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    ushort data;</div><div class="line">    uchar result;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> x=<span class="number">0</span>;x&lt;bufWidth;x++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> y=<span class="number">0</span>;y&lt;bufHeight;y++)</div><div class="line">        &#123;</div><div class="line">            data=pBuf[x*bufHeight+y];</div><div class="line">            result=(data-minVal)/(maxVal-minVal)*<span class="number">255</span>;</div><div class="line">            dstBuf[x*bufHeight+y]=result;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">2%-98%最大最小值拉伸，小于最小值的设为0，大于最大值的设为255</span></div><div class="line"><span class="comment">@param pBuf 保存16位影像数据的数组，该数组一般直接由Gdal的RasterIO函数得到</span></div><div class="line"><span class="comment">@param dstBuf 保存8位影像数据的数组，该数组保存拉伸后的8</span></div><div class="line"><span class="comment">@param width 图像的列数</span></div><div class="line"><span class="comment">@param height 图像的行数</span></div><div class="line"><span class="comment">@param minVal 最小值</span></div><div class="line"><span class="comment">@param maxVal 最大值</span></div><div class="line"><span class="comment">*/</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">MinMaxStretchNew</span><span class="params">(ushort *pBuf,uchar *dstBuf,<span class="keyword">int</span> bufWidth,<span class="keyword">int</span> bufHeight,<span class="keyword">double</span> minVal,<span class="keyword">double</span> maxVal)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    ushort data;</div><div class="line">    uchar result;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> x=<span class="number">0</span>;x&lt;bufWidth;x++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> y=<span class="number">0</span>;y&lt;bufHeight;y++)</div><div class="line">        &#123;</div><div class="line">            data=pBuf[x*bufHeight+y];</div><div class="line">            <span class="keyword">if</span> (data&gt;maxVal)</div><div class="line">                result=<span class="number">255</span>;</div><div class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (data&lt;minVal)</div><div class="line">                result=<span class="number">0</span>;</div><div class="line">            <span class="keyword">else</span></div><div class="line">                result=(data-minVal)/(maxVal-minVal)*<span class="number">255</span>;</div><div class="line">            dstBuf[x*bufHeight+y]=result;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment">计算灰度累积直方图概率分布函数，当累积灰度概率为0.02时取最小值，0.98取最大值</span></div><div class="line"><span class="comment">@param pBuf 保存16位影像数据的数组，该数组一般直接由Gdal的RasterIO函数得到</span></div><div class="line"><span class="comment">@param width 图像的列数</span></div><div class="line"><span class="comment">@param height 图像的行数</span></div><div class="line"><span class="comment">@param minVal 用于保存计算得到的最小值</span></div><div class="line"><span class="comment">@param maxVal 用于保存计算得到的最大值</span></div><div class="line"><span class="comment">*/</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">HistogramAccumlateMinMax16S</span><span class="params">(ushort *pBuf,<span class="keyword">int</span> width,<span class="keyword">int</span> height,<span class="keyword">double</span> *minVal,<span class="keyword">double</span> *maxVal)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">double</span> p[<span class="number">1024</span>],p1[<span class="number">1024</span>],num[<span class="number">1024</span>];</div><div class="line"></div><div class="line">    <span class="built_in">memset</span>(p,<span class="number">0</span>,<span class="keyword">sizeof</span>(p));</div><div class="line">    <span class="built_in">memset</span>(p1,<span class="number">0</span>,<span class="keyword">sizeof</span>(p1));</div><div class="line">    <span class="built_in">memset</span>(num,<span class="number">0</span>,<span class="keyword">sizeof</span>(num));</div><div class="line"></div><div class="line">    <span class="keyword">long</span> wMulh = height * width;</div><div class="line"></div><div class="line">    <span class="comment">//计算灰度分布</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> x=<span class="number">0</span>;x&lt;width;x++)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> y=<span class="number">0</span>;y&lt;height;y++)</div><div class="line">        &#123;</div><div class="line">            ushort v=pBuf[x*height+y];</div><div class="line">            num[v]++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//计算灰度的概率分布</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1024</span>;i++)</div><div class="line">        p[i]=num[i]/wMulh;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> min=<span class="number">0</span>,max=<span class="number">0</span>;</div><div class="line">    <span class="keyword">double</span> minProb=<span class="number">0.0</span>,maxProb=<span class="number">0.0</span>;</div><div class="line">    <span class="comment">//计算灰度累积概率</span></div><div class="line">    <span class="comment">//当概率为0.02时，该灰度为最小值</span></div><div class="line">    <span class="comment">//当概率为0.98时，该灰度为最大值</span></div><div class="line">    <span class="keyword">while</span>(min&lt;<span class="number">1024</span>&amp;&amp;minProb&lt;<span class="number">0.02</span>)</div><div class="line">    &#123;</div><div class="line">        minProb+=p[min];</div><div class="line">        min++;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">do</span></div><div class="line">    &#123;</div><div class="line">        maxProb+=p[max];</div><div class="line">        max++;</div><div class="line">    &#125; <span class="keyword">while</span> (max&lt;<span class="number">1024</span>&amp;&amp;maxProb&lt;<span class="number">0.98</span>);</div><div class="line"></div><div class="line">    *minVal=min;</div><div class="line">    *maxVal=max;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//16bit直接转化为8Bit输出，也可以转化为OpenCV的Mat格式直接在OpenCV显示，或者在Qt中进行显示</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">Create8BitImage</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *srcfile,<span class="keyword">const</span> <span class="keyword">char</span> *dstfile)</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    GDALAllRegister();</div><div class="line">    CPLSetConfigOption(<span class="string">"GDAL_FILENAME_IS_UTF8"</span>,<span class="string">"NO"</span>);</div><div class="line">    GDALDataset *pDataset=(GDALDataset *) GDALOpen( srcfile, GA_ReadOnly );</div><div class="line">    <span class="keyword">int</span> bandNum=pDataset-&gt;GetRasterCount();</div><div class="line"></div><div class="line">    <span class="comment">//获取影像大小</span></div><div class="line">    <span class="keyword">int</span> src_height = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> src_width = <span class="number">0</span>;</div><div class="line">    src_width = pDataset -&gt;GetRasterXSize();</div><div class="line">    src_height = pDataset -&gt;GetRasterYSize();</div><div class="line"></div><div class="line"></div><div class="line">    GDALDriver *pDriver=GetGDALDriverManager()-&gt;GetDriverByName(<span class="string">"GTiff"</span>);</div><div class="line">    GDALDataset *dstDataset=pDriver-&gt;Create(dstfile,src_width,src_height,<span class="number">4</span>,GDT_Byte,<span class="literal">NULL</span>);</div><div class="line">    GDALRasterBand *pBand;</div><div class="line">    GDALRasterBand *dstBand;</div><div class="line"></div><div class="line">    <span class="comment">//定义存储影像的空间参考数组</span></div><div class="line">    <span class="keyword">double</span> adfInGeoTransform[<span class="number">6</span>] = &#123;<span class="number">0</span>&#125;;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pszWKT = <span class="literal">NULL</span>;</div><div class="line">    <span class="comment">//获取影像空间参考</span></div><div class="line">    pDataset -&gt;GetGeoTransform(adfInGeoTransform);</div><div class="line">    pszWKT = pDataset -&gt;GetProjectionRef();</div><div class="line">    dstDataset -&gt; SetGeoTransform(adfInGeoTransform);</div><div class="line">    dstDataset -&gt; SetProjection(pszWKT);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">//写入光栅数据</span></div><div class="line">    ushort *sbuf= <span class="keyword">new</span> ushort[src_width*src_height];</div><div class="line">    uchar *cbuf=<span class="keyword">new</span> uchar[src_width*src_height];</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>,j=<span class="number">1</span>;i&lt;bandNum;i++,j++)</div><div class="line">    &#123;</div><div class="line">        pBand=pDataset-&gt;GetRasterBand(i);</div><div class="line">        pBand-&gt;RasterIO(GF_Read,<span class="number">0</span>,<span class="number">0</span>,src_width,src_height,sbuf,src_width,src_height,GDT_UInt16,<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">        <span class="keyword">int</span> bGotMin, bGotMax;</div><div class="line">        <span class="keyword">double</span> adfMinMax[<span class="number">2</span>];</div><div class="line">        adfMinMax[<span class="number">0</span>] = pBand-&gt;GetMinimum( &amp;bGotMin );</div><div class="line">        adfMinMax[<span class="number">1</span>] = pBand-&gt;GetMaximum( &amp;bGotMax );</div><div class="line">        <span class="keyword">if</span>( ! (bGotMin &amp;&amp; bGotMax) )</div><div class="line">            GDALComputeRasterMinMax((GDALRasterBandH)pBand, TRUE, adfMinMax);</div><div class="line">        <span class="comment">//MinMaxStretch(sbuf,cbuf,src_width,src_height,adfMinMax[0],adfMinMax[1]);</span></div><div class="line"></div><div class="line">        <span class="keyword">double</span> min,max;</div><div class="line">        HistogramAccumlateMinMax16S(sbuf,src_width,src_height,&amp;min,&amp;max);</div><div class="line">        MinMaxStretchNew(sbuf,cbuf,src_width,src_height,min,max);</div><div class="line"></div><div class="line">        dstBand=dstDataset-&gt;GetRasterBand(j);</div><div class="line">        dstBand-&gt;RasterIO(GF_Write,<span class="number">0</span>,<span class="number">0</span>,src_width,src_height,cbuf,src_width,src_height,GDT_Byte,<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">delete</span> []cbuf;</div><div class="line">    <span class="keyword">delete</span> []sbuf;</div><div class="line">    GDALClose(pDataset);</div><div class="line">    GDALClose(dstDataset);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="comment">//记录时间</span></div><div class="line">    <span class="keyword">double</span> time0 = <span class="keyword">static_cast</span>&lt;<span class="keyword">double</span>&gt;(getTickCount());</div><div class="line"></div><div class="line"><span class="comment">//    stretch_percent_16to8("../IMG1.TIF","temp1.tif");</span></div><div class="line">    Create8BitImage(<span class="string">"../IMG1.TIF"</span>,<span class="string">"/Users/taojianhao/Documents/temp.tif"</span>);</div><div class="line"></div><div class="line">    Mat srcimg;</div><div class="line"></div><div class="line">    GDALDataset *poDataset;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *pszFilename= <span class="string">"/Users/taojianhao/Documents/temp.tif"</span>;</div><div class="line"></div><div class="line">    <span class="comment">//使用前需要先进行注册驱动</span></div><div class="line">    GDALAllRegister();</div><div class="line">    poDataset = (GDALDataset*)GDALOpen(pszFilename,GA_ReadOnly);</div><div class="line">    <span class="comment">//获取影像的宽高，波段数</span></div><div class="line">    <span class="keyword">int</span> width = poDataset-&gt;GetRasterXSize();</div><div class="line">    <span class="keyword">int</span> height = poDataset-&gt;GetRasterYSize();</div><div class="line">    <span class="keyword">int</span> nband = poDataset-&gt;GetRasterCount();</div><div class="line"></div><div class="line">    GDALRasterBand *bandData;</div><div class="line">    <span class="keyword">float</span> *p = <span class="keyword">new</span> <span class="keyword">float</span>[width*height];</div><div class="line">    <span class="built_in">vector</span>&lt;Mat&gt; imagesT;</div><div class="line"></div><div class="line">    <span class="comment">//遍历波段，读取到mat向量容器里.注意顺序</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>;i &lt; nband;i++)</div><div class="line">    &#123;</div><div class="line">        bandData = poDataset-&gt;GetRasterBand(i);</div><div class="line">        GDALDataType DataType = bandData-&gt;GetRasterDataType();</div><div class="line">        bandData-&gt;RasterIO(GF_Read,<span class="number">0</span>,<span class="number">0</span>,width,height,p,width,height,DataType ,<span class="number">0</span>,<span class="number">0</span>);</div><div class="line">        <span class="function">Mat <span class="title">HT</span><span class="params">(height,width,CV_8U,p)</span></span>;</div><div class="line">        imagesT.push_back(HT.clone());</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//多通道融合</span></div><div class="line">    Mat Timg;</div><div class="line">    Timg.create(width,height,CV_8UC3);</div><div class="line">    merge(imagesT,Timg);</div><div class="line"></div><div class="line">    namedWindow(<span class="string">"result"</span>,CV_WINDOW_AUTOSIZE);</div><div class="line">    imshow(<span class="string">"result"</span>,Timg);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    imwrite(<span class="string">"output.jpg"</span>,Timg);</div><div class="line"></div><div class="line">    GDALClose((GDALDatasetH)poDataset);</div><div class="line">    imagesT.clear();</div><div class="line"></div><div class="line">    <span class="comment">//记录时间并输出</span></div><div class="line">    time0 = ((<span class="keyword">double</span>)getTickCount() - time0)/getTickFrequency();</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"花费时间:"</span>&lt;&lt;time0&lt;&lt;<span class="string">"秒"</span>&lt;&lt;<span class="built_in">endl</span>;</div><div class="line"></div><div class="line">    cv::waitKey(<span class="number">0</span>);</div><div class="line">    <span class="built_in">std</span>::system(<span class="string">"pause"</span>);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>OK!</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢老板！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="Tao Jianhao 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Tao Jianhao 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OpenCV/" rel="tag"><i class="fa fa-tag"></i> OpenCV</a>
+          
+            <a href="/tags/GDAL/" rel="tag"><i class="fa fa-tag"></i> GDAL</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/04/人性的弱点/" rel="next" title="人性的弱点">
+                <i class="fa fa-chevron-left"></i> 人性的弱点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=21624b61d124c"></script>
+
+<!--MOB SHARE END-->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+       
+         <div onclick="ShowGitment()" id="gitment-display-button">显示 Gitment 评论</div>
+         <div id="gitment-container" style="display:none"></div>
+       
+
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/images/chenmeng.jpg"
+              alt="Tao Jianhao" />
+          
+            <p class="site-author-name" itemprop="name">Tao Jianhao</p>
+            <p class="site-description motion-element" itemprop="description">我真不是神经病啊！</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/657122411" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:657122411@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-qq"></i>E-Mail</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5525116792" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>微博</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/cc1856021b07" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>简书</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=433018042&auto=0&height=66"></iframe>
+
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#16bit的影像数据降位显示"><span class="nav-number">1.</span> <span class="nav-text">16bit的影像数据降位显示</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tao Jianhao</span>
+
+  
+</div>
+
+
+
+	<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>
+</span>
+</div>
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+   
+   
+   
+   
+   <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+   <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+   
+       <script type="text/javascript">
+           function ShowGitment(){
+               document.getElementById("gitment-display-button").style.display = "none";
+               document.getElementById("gitment-container").style.display = "block";
+               var gitment = new Gitment({
+                   id: document.location.href, 
+                   owner: '657122411',
+                   repo: '657122411.github.io',
+                   oauth: {
+                       client_id: '610e2ab1086a93df1958',
+                       client_secret: 'f175704d48f6a5976f6e93ef3c3b3345d711bc6b',
+                   }});
+               gitment.render('gitment-container');
+           }
+       </script>
+   
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("cxna1wtUcQROroCPdUuk6Az5-gzGzoHsz", "SEhWeMcdi52a1GQ55REeKCpu");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
