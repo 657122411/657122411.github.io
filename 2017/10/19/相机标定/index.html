@@ -55,7 +55,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo,shareSDK," />
+  <meta name="keywords" content="相机标定," />
 
 
 
@@ -71,18 +71,23 @@
 
 
 
-<meta name="description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
-<meta name="keywords" content="Hexo,shareSDK">
+<meta name="description" content="引入三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。 原理老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相">
+<meta name="keywords" content="相机标定">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
-<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/09/30/share/index.html">
+<meta property="og:title" content="基于线性方程组的相机标定">
+<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/10/19/相机标定/index.html">
 <meta property="og:site_name" content="该用户已注册">
-<meta property="og:description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
+<meta property="og:description" content="引入三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。 原理老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-01T02:44:10.000Z">
+<meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/camera.png">
+<meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png">
+<meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/camera.png">
+<meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png">
+<meta property="og:updated_time" content="2017-10-19T04:43:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
-<meta name="twitter:description" content="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享之前按照相关技术博客指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使hexo clean hexo d -g多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。而后搜索问题是看到了这些表述：百度">
+<meta name="twitter:title" content="基于线性方程组的相机标定">
+<meta name="twitter:description" content="引入三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。 原理老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相">
+<meta name="twitter:image" content="http://ox4knic59.bkt.clouddn.com/camera.png">
 
 
 
@@ -112,13 +117,13 @@
 
 
 
-  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/09/30/share/"/>
+  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/10/19/相机标定/"/>
 
 
 
 
 
-  <title>Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享 | 该用户已注册</title>
+  <title>基于线性方程组的相机标定 | 该用户已注册</title>
   
 
 
@@ -265,7 +270,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/09/30/share/">
+    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/10/19/相机标定/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Tao Jianhao">
@@ -282,7 +287,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</h1>
+          <h1 class="post-title" itemprop="name headline">基于线性方程组的相机标定</h1>
         
 
         <div class="post-meta">
@@ -294,8 +299,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-30T23:20:25+08:00">
-                2017-09-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-19T12:32:39+08:00">
+                2017-10-19
               </time>
             
 
@@ -317,8 +322,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Hexo/" itemprop="url" rel="index">
-                    <span itemprop="name">Hexo</span>
+                  <a href="/categories/摄影测量/" itemprop="url" rel="index">
+                    <span itemprop="name">摄影测量</span>
                   </a>
                 </span>
 
@@ -334,7 +339,7 @@
 
           
           
-             <span id="/2017/09/30/share/" class="leancloud_visitors" data-flag-title="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享">
+             <span id="/2017/10/19/相机标定/" class="leancloud_visitors" data-flag-title="基于线性方程组的相机标定">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -365,11 +370,17 @@
       
 
       
-        <h1 id="Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享"><a href="#Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享" class="headerlink" title="Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享"></a>Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</h1><p>之前按照相关<a href="http://www.aoshizhang.com/2016/04/add-sharesdk/" target="_blank" rel="external">技术博客</a>指引下搭建了分享的组件，在hexo s 本地后运转正常，但之后的部署无法正常使用，即使<code>hexo clean</code> <code>hexo d -g</code>多次也无效，还把GitHub上的所有文件重新替换了也不行（之前按网上的相关问题以为是css布局的路径问题，其实应该不是那类问题）。<br>而后搜索问题是看到了这些表述：<br><a href="http://blog.csdn.net/cl534854121/article/details/76121105" target="_blank" rel="external">百度分享在https中的使用</a>,博主在其中提到了：“百度分享不能使用的主要原因是它会去请求http中的资源，一个share.js，既然这样，我们能想到的就是把这个资源放到非http上，或者干脆直接放到我们自己的目录下面。”<br>那么我就联想到当初配置shareSDK的时候，似乎也是在以HTTPS的协议博客中去请求了HTTP协议下的mob-share.js:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&lt;!--MOB SHARE BEGIN--&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-button -mob-share-open&quot;&gt;分享&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui&quot; style=&quot;display: none&quot;&gt;</div><div class="line">&lt;ul class=&quot;-mob-share-list&quot;&gt;</div><div class="line">&lt;li class=&quot;-mob-share-weibo&quot;&gt;&lt;p&gt;新浪微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-tencentweibo&quot;&gt;&lt;p&gt;腾讯微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qzone&quot;&gt;&lt;p&gt;QQ空间&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qq&quot;&gt;&lt;p&gt;QQ好友&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-renren&quot;&gt;&lt;p&gt;人人网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-kaixin&quot;&gt;&lt;p&gt;开心网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-douban&quot;&gt;&lt;p&gt;豆瓣&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-facebook&quot;&gt;&lt;p&gt;Facebook&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-twitter&quot;&gt;&lt;p&gt;Twitter&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line">&lt;div class=&quot;-mob-share-close&quot;&gt;取消&lt;/div&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-bg&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script id=&quot;-mob-share&quot; src=&quot;http://f1.webshare.mob.com/code/mob-share.js?appkey=你的appkey&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;!--MOB SHARE END--&gt;</div></pre></td></tr></table></figure></p>
-<hr>
-<p>嗯。找到了问题的根源了，该怎么解决呢？一般认为HTTPS去请求HTTP是一种不安全的行为吧，但在个人博客里，安全性并不做太多考虑了，所以我就想强制访问了。最简单的访问方式就是把<code>src=&quot;https://XXXXXX.js   &quot;</code>改成了<code>src=&quot;//XXXXXX.js   &quot;</code>,这样就使得发布后的博客仍然能请求到js资源，从而实现分享功能了。</p>
-<p>修改后的sharesdk.swig是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&lt;!--MOB SHARE BEGIN--&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-button -mob-share-open&quot;&gt;分享&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui&quot; style=&quot;display: none&quot;&gt;</div><div class="line">&lt;ul class=&quot;-mob-share-list&quot;&gt;</div><div class="line">&lt;li class=&quot;-mob-share-weibo&quot;&gt;&lt;p&gt;新浪微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-tencentweibo&quot;&gt;&lt;p&gt;腾讯微博&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qzone&quot;&gt;&lt;p&gt;QQ空间&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-qq&quot;&gt;&lt;p&gt;QQ好友&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-renren&quot;&gt;&lt;p&gt;人人网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-kaixin&quot;&gt;&lt;p&gt;开心网&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-douban&quot;&gt;&lt;p&gt;豆瓣&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-facebook&quot;&gt;&lt;p&gt;Facebook&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;li class=&quot;-mob-share-twitter&quot;&gt;&lt;p&gt;Twitter&lt;/p&gt;&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line">&lt;div class=&quot;-mob-share-close&quot;&gt;取消&lt;/div&gt;</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div class=&quot;-mob-share-ui-bg&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script id=&quot;-mob-share&quot; src=&quot;//f1.webshare.mob.com/code/mob-share.js?appkey=&#123;&#123; theme.shareSDKappkey &#125;&#125;&quot;&gt;&lt;/script&gt;</div><div class="line"></div><div class="line">&lt;!--MOB SHARE END--&gt;</div></pre></td></tr></table></figure></p>
-<p>这样hexo d发布的博客分享功能就正常了。</p>
+        <h2 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h2><p>三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。<br><img src="http://ox4knic59.bkt.clouddn.com/camera.png" alt="相机内外参"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相机的物理特性很可能没办法通过上述假设来得到完全的拟合。所以需要意识到，每一次相机标定仅仅只是对物理相机模型的一次近似，再具体一点来说，每一次标定仅仅是对相机物理模型在采样空间范围内的一次近似。所以当你成像物体所在的空间跟相机标定时的采样空间不一样的时候，你可能永远都没办法得到足够的精度，当你大幅改变相机与成像物体的距离的时候，你最好重新标定相机。如果你想在一个空间里得到更高的精度，你可以在空间里分层多次标定，实际计算的时候通过其他方式得到成像距离，从而选择合适的标定参数。</p>
+<h2 id="物理参数模型"><a href="#物理参数模型" class="headerlink" title="物理参数模型"></a>物理参数模型</h2><p>CCD上获得的误差来源有多重，比如有CCD像元形变，CCD线阵的旋转变形。最重要的就是光学镜头畸变引起的像点偏移，他可以分为径向畸变和偏心畸变。标定的作用其一就是为了求取畸变系数（因为经过镜头等成像后，或多或少都有畸变），其二是为了得到空间坐标系和图像坐标系的对应关系。标定的过程就是一个最小化的求取参数的过程，拍的图越多（相当于输入）结果越准确。<br>最后得到的：<br><img src="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png" alt="模型公式"></p>
+<h2 id="这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是"><a href="#这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是" class="headerlink" title="这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是:"></a>这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是:</h2><p>title: 基于线性方程组的相机标定<br>date: 2017-10-19 12:32:39<br>tags: 相机标定</p>
+<h2 id="categories-摄影测量"><a href="#categories-摄影测量" class="headerlink" title="categories: 摄影测量"></a>categories: 摄影测量</h2><h2 id="引入-1"><a href="#引入-1" class="headerlink" title="引入"></a>引入</h2><p>三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。<br><img src="http://ox4knic59.bkt.clouddn.com/camera.png" alt="相机内外参"></p>
+<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相机的物理特性很可能没办法通过上述假设来得到完全的拟合。所以需要意识到，每一次相机标定仅仅只是对物理相机模型的一次近似，再具体一点来说，每一次标定仅仅是对相机物理模型在采样空间范围内的一次近似。所以当你成像物体所在的空间跟相机标定时的采样空间不一样的时候，你可能永远都没办法得到足够的精度，当你大幅改变相机与成像物体的距离的时候，你最好重新标定相机。如果你想在一个空间里得到更高的精度，你可以在空间里分层多次标定，实际计算的时候通过其他方式得到成像距离，从而选择合适的标定参数。</p>
+<h2 id="物理参数模型-1"><a href="#物理参数模型-1" class="headerlink" title="物理参数模型"></a>物理参数模型</h2><p>CCD上获得的误差来源有多重，比如有CCD像元形变，CCD线阵的旋转变形。最重要的就是光学镜头畸变引起的像点偏移，他可以分为径向畸变和偏心畸变。标定的作用其一就是为了求取畸变系数（因为经过镜头等成像后，或多或少都有畸变），其二是为了得到空间坐标系和图像坐标系的对应关系。标定的过程就是一个最小化的求取参数的过程，拍的图越多（相当于输入）结果越准确。<br>最后得到的：<br><img src="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png" alt="模型公式"><br>这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是:<br>$X=(A^{T}A)^{-1}A^{^{T}}L$</p>
+<h2 id="流程实现"><a href="#流程实现" class="headerlink" title="流程实现"></a>流程实现</h2><p>网上有许多已经实现了的OpenCV相机标定，我自己过两天应该也会写一下试试。网上基本都是用棋盘角点做的张正友相机标定法，老板提出来的是卫星影像上的大地控制点（GCP）来做求解即便参数的。这里看到一份相对简单的OpenCV棋盘法<a href="http://blog.csdn.net/endlch/article/details/44539595" target="_blank" rel="external">相机标定</a>,加深一下印象。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>过两天写了在比较一下异同吧。</p>
+<h2 id="流程实现-1"><a href="#流程实现-1" class="headerlink" title="流程实现"></a>流程实现</h2><p>网上有许多已经实现了的OpenCV相机标定，我自己过两天应该也会写一下试试。网上基本都是用棋盘角点做的张正友相机标定法，老板提出来的是卫星影像上的大地控制点（GCP）来做求解即便参数的。这里看到一份相对简单的OpenCV棋盘法<a href="http://blog.csdn.net/endlch/article/details/44539595" target="_blank" rel="external">相机标定</a>,加深一下印象。</p>
+<h2 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h2><p>过两天写了在比较一下异同吧。</p>
 
       
     </div>
@@ -416,9 +427,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Hexo/" rel="tag"><i class="fa fa-tag"></i> Hexo</a>
-          
-            <a href="/tags/shareSDK/" rel="tag"><i class="fa fa-tag"></i> shareSDK</a>
+            <a href="/tags/相机标定/" rel="tag"><i class="fa fa-tag"></i> 相机标定</a>
           
         </div>
       
@@ -431,8 +440,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/25/测试一下呗/" rel="next" title="陶剑浩的demo">
-                <i class="fa fa-chevron-left"></i> 陶剑浩的demo
+              <a href="/2017/10/17/16to8/" rel="next" title="16bit的影像数据降位显示">
+                <i class="fa fa-chevron-left"></i> 16bit的影像数据降位显示
               </a>
             
           </div>
@@ -440,10 +449,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/09/30/2/" rel="prev" title="Mac环境下clion配置GDAL库——cmakelist.txt怎么写">
-                Mac环境下clion配置GDAL库——cmakelist.txt怎么写 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -637,7 +642,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hexo-Next博客分享功能搭建（baidushare-sharesdk）部署后无法分享"><span class="nav-number">1.</span> <span class="nav-text">Hexo Next博客分享功能搭建（baidushare sharesdk）部署后无法分享</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引入"><span class="nav-number">1.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#物理参数模型"><span class="nav-number">3.</span> <span class="nav-text">物理参数模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是"><span class="nav-number">4.</span> <span class="nav-text">这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#categories-摄影测量"><span class="nav-number">5.</span> <span class="nav-text">categories: 摄影测量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#引入-1"><span class="nav-number">6.</span> <span class="nav-text">引入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理-1"><span class="nav-number">7.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#物理参数模型-1"><span class="nav-number">8.</span> <span class="nav-text">物理参数模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程实现"><span class="nav-number">9.</span> <span class="nav-text">流程实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">10.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程实现-1"><span class="nav-number">11.</span> <span class="nav-text">流程实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码-1"><span class="nav-number">12.</span> <span class="nav-text">代码</span></a></li></ol></div>
             
 
           </div>
