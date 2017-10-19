@@ -81,7 +81,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/camera.png">
 <meta property="og:image" content="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png">
-<meta property="og:updated_time" content="2017-10-19T05:00:30.000Z">
+<meta property="og:updated_time" content="2017-10-19T05:05:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于线性方程组的相机标定">
 <meta name="twitter:description" content="引入三维重建之前，得到的数据首先要是“精准的”，虽然以前物理中对于镜头的定义一般都是理想化的，实际上镜头肯定做不到百分百的完美，因此我们需要建立一个物理数学模型，来表示一个真正“理想化的镜头”。 原理老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相">
@@ -372,7 +372,7 @@
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>老板给了一份详细的数学推导的标定过程，我这里就简单总结归纳一下：相机标定得到的相应系数仅仅是对相机物理特性的【近似】！传统相机标定假设相机是小孔成像模型，一般使用两种畸变来模拟镜片的物理畸变。但实际相机的物理特性很可能没办法通过上述假设来得到完全的拟合。所以需要意识到，每一次相机标定仅仅只是对物理相机模型的一次近似，再具体一点来说，每一次标定仅仅是对相机物理模型在采样空间范围内的一次近似。所以当你成像物体所在的空间跟相机标定时的采样空间不一样的时候，你可能永远都没办法得到足够的精度，当你大幅改变相机与成像物体的距离的时候，你最好重新标定相机。如果你想在一个空间里得到更高的精度，你可以在空间里分层多次标定，实际计算的时候通过其他方式得到成像距离，从而选择合适的标定参数。</p>
 <h2 id="物理参数模型"><a href="#物理参数模型" class="headerlink" title="物理参数模型"></a>物理参数模型</h2><p>CCD上获得的误差来源有多重，比如有CCD像元形变，CCD线阵的旋转变形。最重要的就是光学镜头畸变引起的像点偏移，他可以分为径向畸变和偏心畸变。标定的作用其一就是为了求取畸变系数（因为经过镜头等成像后，或多或少都有畸变），其二是为了得到空间坐标系和图像坐标系的对应关系。标定的过程就是一个最小化的求取参数的过程，拍的图越多（相当于输入）结果越准确。<br>最后得到的：<br><img src="http://ox4knic59.bkt.clouddn.com/%E5%85%AC%E5%BC%8F.png" alt="模型公式"><br>这之后要将函数表达式用泰勒公式展开成线性形式，即“线性化“，再根据多余的大地控制点进行基于最小二乘法的间接平差原理，来得到系数矩阵，求解公式是:</p>
 <p> X=(A^{T}A)^{-1}A^{T}L </p>
-<h2 id="流程实现"><a href="#流程实现" class="headerlink" title="流程实现"></a>流程实现</h2><p>网上有许多已经实现了的OpenCV相机标定，我自己过两天应该也会写一下试试。网上基本都是用棋盘角点做的张正友相机标定法，老板提出来的是卫星影像上的大地控制点（GCP）来做求解即便参数的。这里看到一份相对简单的OpenCV棋盘法<a href="http://blog.csdn.net/endlch/article/details/44539595" target="_blank" rel="external">相机标定</a>,加深一下印象。</p>
+<h2 id="流程实现"><a href="#流程实现" class="headerlink" title="流程实现"></a>流程实现</h2><p>网上有许多已经实现了的OpenCV相机标定，我自己过两天应该也会写一下试试。网上基本都是用棋盘角点做的张正友相机标定法，老板提出来的是卫星影像上的大地控制点（GCP）来做求解畸变参数的。这里看到一份相对简单的OpenCV棋盘法<a href="http://blog.csdn.net/endlch/article/details/44539595" target="_blank" rel="external">相机标定</a>,加深一下印象。</p>
 <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>过两天写了在比较一下异同吧。</p>
 
       
