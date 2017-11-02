@@ -427,7 +427,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -677,6 +677,30 @@
 
 
 
+
+   
+   
+   
+   
+   <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+   <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+   
+       <script type="text/javascript">
+           function ShowGitment(){
+               document.getElementById("gitment-display-button").style.display = "none";
+               document.getElementById("gitment-container").style.display = "block";
+               var gitment = new Gitment({
+                   id: document.location.href, 
+                   owner: '657122411',
+                   repo: '657122411.github.io',
+                   oauth: {
+                       client_id: '610e2ab1086a93df1958',
+                       client_secret: 'f175704d48f6a5976f6e93ef3c3b3345d711bc6b',
+                   }});
+               gitment.render('gitment-container');
+           }
+       </script>
+   
 
   
 

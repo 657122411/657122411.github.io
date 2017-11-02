@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="7wz1QEqjYF" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="相机标定," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="简单封装单目相机标定标定流程上次提出了要做相机标定的，我在师姐写的标定流程上对其做了一点点封装，底层还是用的OpenCV的标定方法，主要为了熟悉一下标定的流程和其中的传参要注意的细节。先看main函数： 12345678910111213141516171819202122232425262728293031323334#include &quot;stdafx.h&quot;#include &quot;StereoCali">
+<meta name="keywords" content="相机标定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单的封装OpenCV相机标定">
+<meta property="og:url" content="https://github.com/657122411/657122411.github.io/2017/11/02/camcalib/index.html">
+<meta property="og:site_name" content="Tao&#39;s Site">
+<meta property="og:description" content="简单封装单目相机标定标定流程上次提出了要做相机标定的，我在师姐写的标定流程上对其做了一点点封装，底层还是用的OpenCV的标定方法，主要为了熟悉一下标定的流程和其中的传参要注意的细节。先看main函数： 12345678910111213141516171819202122232425262728293031323334#include &quot;stdafx.h&quot;#include &quot;StereoCali">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-02T11:30:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="简单的封装OpenCV相机标定">
+<meta name="twitter:description" content="简单封装单目相机标定标定流程上次提出了要做相机标定的，我在师姐写的标定流程上对其做了一点点封装，底层还是用的OpenCV的标定方法，主要为了熟悉一下标定的流程和其中的传参要注意的细节。先看main函数： 12345678910111213141516171819202122232425262728293031323334#include &quot;stdafx.h&quot;#include &quot;StereoCali">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://github.com/657122411/657122411.github.io/2017/11/02/camcalib/"/>
+
+
+
+
+
+  <title>简单的封装OpenCV相机标定 | Tao's Site</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fd33731430ec82d9f77c123433cac022";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Tao's Site</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://github.com/657122411/657122411.github.io/2017/11/02/camcalib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Tao Jianhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/chenmeng.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tao's Site">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">简单的封装OpenCV相机标定</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-02T16:53:14+08:00">
+                2017-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenCV/" itemprop="url" rel="index">
+                    <span itemprop="name">OpenCV</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/11/02/camcalib/" class="leancloud_visitors" data-flag-title="简单的封装OpenCV相机标定">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="简单封装单目相机标定"><a href="#简单封装单目相机标定" class="headerlink" title="简单封装单目相机标定"></a>简单封装单目相机标定</h1><h2 id="标定流程"><a href="#标定流程" class="headerlink" title="标定流程"></a>标定流程</h2><p>上次提出了要做相机标定的，我在师姐写的标定流程上对其做了一点点封装，底层还是用的OpenCV的标定方法，主要为了熟悉一下标定的流程和其中的传参要注意的细节。先看main函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"StereoCalib.h"</span><span class="meta-string">"</span></span></div><div class="line"><span class="meta"><span class="meta-string">#include &lt;string&gt;</span></span></div><div class="line"><span class="meta"><span class="meta-string">#include "</span>cv.h<span class="meta-string">"</span></span></div><div class="line"><span class="meta"><span class="meta-string">#include "</span>cxmisc.h<span class="meta-string">"</span></span></div><div class="line"><span class="meta"><span class="meta-string">using namespace cv;</span></span></div><div class="line"><span class="meta"><span class="meta-string"></span></span></div><div class="line"><span class="meta"><span class="meta-string">int main()</span></span></div><div class="line"><span class="meta"><span class="meta-string">&#123;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    StereoCalib stereo_calib;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    StereoCalib::CornerDatas cornerDatas;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    StereoCalib::SingleCameraParam singleParams;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    int n_image = 4;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    int n_foundboard = 0;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    cv::Size board_size(6, 6);</span></span></div><div class="line"><span class="meta"><span class="meta-string">    float squar_width = 40; //unit:mm</span></span></div><div class="line"><span class="meta"><span class="meta-string">    vector&lt;string&gt; imgFiles(10);</span></span></div><div class="line"><span class="meta"><span class="meta-string">    imgFiles[0] = "</span>test0.jpg<span class="meta-string">";</span></span></div><div class="line"><span class="meta"><span class="meta-string">    imgFiles[1] = "</span>test1.jpg<span class="meta-string">";</span></span></div><div class="line"><span class="meta"><span class="meta-string">    imgFiles[2] = "</span>test2.jpg<span class="meta-string">";</span></span></div><div class="line"><span class="meta"><span class="meta-string">    imgFiles[3] = "</span>test3.jpg<span class="meta-string">";</span></span></div><div class="line"><span class="meta"><span class="meta-string">    while (n_foundboard&lt;n_image) &#123;</span></span></div><div class="line"><span class="meta"><span class="meta-string">        char* img_path = (char*)imgFiles[n_foundboard].c_str();</span></span></div><div class="line"><span class="meta"><span class="meta-string">        Mat img = cvLoadImage(img_path);</span></span></div><div class="line"><span class="meta"><span class="meta-string">        Size image_size = img.size();</span></span></div><div class="line"><span class="meta"><span class="meta-string">        stereo_calib.initCornerData(n_image, image_size, board_size, squar_width, cornerDatas);</span></span></div><div class="line"><span class="meta"><span class="meta-string">        // 检测角点</span></span></div><div class="line"><span class="meta"><span class="meta-string">        stereo_calib.detectCorners(img, cornerDatas, n_foundboard);</span></span></div><div class="line"><span class="meta"><span class="meta-string">        n_foundboard++;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    &#125;</span></span></div><div class="line"><span class="meta"><span class="meta-string">    stereo_calib.calibrateSingleCamera(cornerDatas,singleParams);</span></span></div><div class="line"><span class="meta"><span class="meta-string">    stereo_calib.saveCameraParams(singleParams,"</span>cameraParams.txt<span class="meta-string">");</span></span></div><div class="line"><span class="meta"><span class="meta-string">    return 0;</span></span></div><div class="line"><span class="meta"><span class="meta-string">&#125;</span></span></div></pre></td></tr></table></figure>
+<p>把封装的内容都放在了stereocalib里，里面写了类的形式来进行调用，main函数里首先初始化了相关的参数，然后指定了棋盘的路径，传入后进行检测角点：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> StereoCalib::initCornerData(<span class="keyword">int</span> nImages,cv::Size imageSize, cv::Size boardSize, <span class="keyword">float</span> squareWidth, CornerDatas&amp; cornerDatas)</div><div class="line">&#123;</div><div class="line">    cornerDatas.nImages = nImages;</div><div class="line">    cornerDatas.imageSize = imageSize;</div><div class="line">    cornerDatas.boardSize = boardSize;</div><div class="line">    cornerDatas.nPoints = nImages*boardSize.width * boardSize.height;</div><div class="line">    cornerDatas.nPointsPerImage = boardSize.width * boardSize.height;</div><div class="line">    cornerDatas.objectPoints.resize(nImages, <span class="built_in">vector</span>&lt;cv::Point3f&gt;(cornerDatas.nPointsPerImage, cv::Point3f(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>)));</div><div class="line">    cornerDatas.imagePoints.resize(nImages, <span class="built_in">vector</span>&lt;cv::Point2f&gt;(cornerDatas.nPointsPerImage, cv::Point2f(<span class="number">0</span>,<span class="number">0</span>)));</div><div class="line"></div><div class="line">    <span class="comment">//计算棋盘角点的世界坐标值</span></div><div class="line">    <span class="keyword">int</span> i,j,k,n;</div><div class="line">    <span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; nImages; i++ )</div><div class="line">    &#123;</div><div class="line">        n = <span class="number">0</span>;</div><div class="line">        <span class="keyword">for</span>( j = <span class="number">0</span>; j &lt; boardSize.height; j++ )</div><div class="line">            <span class="keyword">for</span>( k = <span class="number">0</span>; k &lt; boardSize.width; k++ )</div><div class="line">                cornerDatas.objectPoints[i][n++] = cv::Point3f(j*squareWidth, k*squareWidth, <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/*----------------------------</span></div><div class="line"><span class="comment"> * 功能 : 根据成功检测的棋盘数目修改棋盘角点数据</span></div><div class="line"><span class="comment"> *----------------------------</span></div><div class="line"><span class="comment"> * 函数 : StereoCalib::resizeCornerData</span></div><div class="line"><span class="comment"> * 访问 : public </span></div><div class="line"><span class="comment"> * 返回 : 0 - 操作失败，1 - 操作成功</span></div><div class="line"><span class="comment"> *</span></div><div class="line"><span class="comment"> * 参数 : nImages     [in]    棋盘图像数</span></div><div class="line"><span class="comment"> * 参数 : cornerDatas [out]   修改后的棋盘角点数据</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">int</span> StereoCalib::resizeCornerData(<span class="keyword">int</span> nImages, CornerDatas&amp; cornerDatas)</div><div class="line">&#123;</div><div class="line">    cornerDatas.nImages = nImages;</div><div class="line">    cornerDatas.nPoints = nImages * cornerDatas.nPointsPerImage;</div><div class="line">    cornerDatas.objectPoints.resize(nImages);</div><div class="line">    cornerDatas.imagePoints.resize(nImages);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> StereoCalib::detectCorners(cv::Mat&amp; img, CornerDatas&amp; cornerDatas,<span class="keyword">int</span> imageCount)</div><div class="line">&#123;</div><div class="line">    <span class="comment">//转换为灰度图</span></div><div class="line">    cv::Mat img_gray;</div><div class="line">    cvtColor(img,img_gray,CV_RGB2GRAY);</div><div class="line">    </div><div class="line">    <span class="comment">// 提取当前棋盘对应的角点坐标子矩阵</span></div><div class="line">    <span class="built_in">vector</span>&lt;cv::Point2f&gt;&amp; corners = cornerDatas.imagePoints[imageCount];</div><div class="line">    <span class="keyword">bool</span> found=<span class="literal">false</span>;</div><div class="line">    <span class="keyword">int</span> flags = CV_CALIB_CB_ADAPTIVE_THRESH + CV_CALIB_CB_NORMALIZE_IMAGE + CV_CALIB_CB_FAST_CHECK;</div><div class="line">    found=findChessboardCorners(img_gray,cornerDatas.boardSize,corners,flags);</div><div class="line">    <span class="keyword">if</span> (found)</div><div class="line">    &#123;</div><div class="line">        <span class="comment">//计算角点的精确坐标（Neighborhood size）</span></div><div class="line">        cv::<span class="function">Size <span class="title">regionSize</span><span class="params">(<span class="number">11</span>, <span class="number">11</span>)</span></span>;</div><div class="line">        cornerSubPix(img_gray, corners, regionSize, cv::Size(<span class="number">-1</span>,<span class="number">-1</span>), cv::TermCriteria(cv::TermCriteria::MAX_ITER|cv::TermCriteria::EPS, <span class="number">30</span>, <span class="number">0.01</span>));</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 显示检测到的角点</span></div><div class="line">    drawChessboardCorners(img_gray, cornerDatas.boardSize, corners, found);</div><div class="line">    <span class="keyword">char</span> chessboard_img_name[<span class="number">30</span>];</div><div class="line">    <span class="built_in">sprintf</span>(chessboard_img_name,<span class="string">"chessboard_corners_%d.jpg"</span>,imageCount);</div><div class="line">    imwrite(chessboard_img_name,img_gray);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> found?<span class="number">1</span>:<span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>之后就是最关键的执行相机标定,并且把获得的相机内外参矩阵和获得即便参数打印到TXT中：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> StereoCalib::calibrateSingleCamera(CornerDatas&amp; cornerDatas, SingleCameraParam&amp; singleCameraParams)</div><div class="line">&#123;</div><div class="line">    singleCameraParams.imageSize = cornerDatas.imageSize;</div><div class="line">    cv::calibrateCamera(</div><div class="line">        cornerDatas.objectPoints, </div><div class="line">        cornerDatas.imagePoints, </div><div class="line">        cornerDatas.imageSize, </div><div class="line">        singleCameraParams.cameraMatrix, </div><div class="line">        singleCameraParams.distortionCoefficients,</div><div class="line">        singleCameraParams.rotations, </div><div class="line">        singleCameraParams.translations,</div><div class="line">        CV_CALIB_CB_ADAPTIVE_THRESH</div><div class="line">        );</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> StereoCalib::saveCameraParams(<span class="keyword">const</span> SingleCameraParam&amp; singleCameraParams, <span class="keyword">const</span> <span class="keyword">char</span>* filename <span class="comment">/* = "cameraParams.txt" */</span>)</div><div class="line">&#123;</div><div class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> filename_ = filename;</div><div class="line"></div><div class="line">    <span class="comment">//写入数据</span></div><div class="line">    cv::FileStorage fs(filename_.c_str(), cv::FileStorage::WRITE);</div><div class="line">    <span class="keyword">if</span> (fs.isOpened())</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">char</span> flagText[<span class="number">1024</span>];</div><div class="line">        sprintf_s( flagText, <span class="string">"flags: %s%s%s%s%s"</span>,</div><div class="line">            singleCameraParams.flags &amp; CV_CALIB_FIX_K3 ? <span class="string">"fix_k3"</span> : <span class="string">""</span>,</div><div class="line">            singleCameraParams.flags &amp; CV_CALIB_USE_INTRINSIC_GUESS ? <span class="string">" + use_intrinsic_guess"</span> : <span class="string">""</span>,</div><div class="line">            singleCameraParams.flags &amp; CV_CALIB_FIX_ASPECT_RATIO ? <span class="string">" + fix_aspect_ratio"</span> : <span class="string">""</span>,</div><div class="line">            singleCameraParams.flags &amp; CV_CALIB_FIX_PRINCIPAL_POINT ? <span class="string">" + fix_principal_point"</span> : <span class="string">""</span>,</div><div class="line">            singleCameraParams.flags &amp; CV_CALIB_ZERO_TANGENT_DIST ? <span class="string">" + zero_tangent_dist"</span> : <span class="string">""</span> );</div><div class="line">        cvWriteComment(*fs, flagText, <span class="number">0</span>);</div><div class="line"></div><div class="line">        fs &lt;&lt;<span class="string">"flags"</span>&lt;&lt; singleCameraParams.flags;</div><div class="line"></div><div class="line">        fs &lt;&lt;<span class="string">"imageSize"</span> &lt;&lt; <span class="string">"["</span> &lt;&lt; singleCameraParams.imageSize.width &lt;&lt; singleCameraParams.imageSize.height &lt;&lt; <span class="string">"]"</span>;</div><div class="line"></div><div class="line">        fs &lt;&lt;<span class="string">"cameraMatrix"</span>&lt;&lt; singleCameraParams.cameraMatrix;</div><div class="line">        fs &lt;&lt;<span class="string">"distortionCoefficients"</span>&lt;&lt; singleCameraParams.distortionCoefficients;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> nImages = singleCameraParams.rotations.size();</div><div class="line">        fs &lt;&lt; <span class="string">"nImages"</span> &lt;&lt; nImages;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nImages; i++)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">char</span> matName[<span class="number">50</span>];</div><div class="line">            sprintf_s(matName, <span class="string">"rotaionMatrix_%d"</span>, i);</div><div class="line"></div><div class="line">            fs &lt;&lt; matName &lt;&lt; singleCameraParams.rotations[i];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nImages; i++)</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">char</span> matName[<span class="number">50</span>];</div><div class="line">            sprintf_s(matName, <span class="string">"translationMatrix_%d"</span>, i);</div><div class="line"></div><div class="line">            fs &lt;&lt; matName &lt;&lt; singleCameraParams.translations[i];</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        fs.release();</div><div class="line">        <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">    &#125; </div><div class="line">    <span class="keyword">else</span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="cv-calibrateCamera标定函数"><a href="#cv-calibrateCamera标定函数" class="headerlink" title="cv::calibrateCamera标定函数"></a>cv::calibrateCamera标定函数</h2><p>这个是封装在里面最核心的函数了，重点就是传进去的参数是什么意义，OpenCV里对函数的定义是：<code>double calibrateCamera(InputArrayOfArrays objectPoints, InputArrayOfArrays imagePoints,Size imageSize, InputOutputArray cameraMatrix, InputOutputArray distCoeffs, OutputArrayOfArrays rvecs, OutputArrayOfArrays tvecs, int flags=0)</code></p>
+<p>这里要对参数了解一下，其中：<br><code>objectPoints</code>为世界坐标系中的点。在使用时，应该输入一个三维点的vector的vector，即vector<vector<point3f>&gt; objectPoints。<br><code>imagePoints</code>为其对应的图像点。和objectPoints一样，应该输入std::vector<std::vector<cv::point2f>&gt; imagePoints型的变量。<br><code>imageSize</code>为图像的大小，在计算相机的内参数和畸变矩阵需要用到；<br><code>cameraMatrix</code>为内参数矩阵。输入一个cv::Mat cameraMatrix即可。<br><code>distCoeffs</code>为畸变矩阵。输入一个cv::Mat distCoeffs即可。<br><code>rvecs</code>为旋转向量；应该输入一个cv::Mat的vector，即vector<cv::mat> rvecs因为每个vector<point3f>会得到一个rvecs。<br><code>tvecs</code>为位移向量；和rvecs一样，也应该为vector<cv::mat> tvecs。<br><code>flags</code>为标定是所采用的算法。可如下某个或者某几个参数：<br><code>CV_CALIB_USE_INTRINSIC_GUESS</code>：使用该参数时，在cameraMatrix矩阵中应该有fx,fy,cx,cy的估计值。否则的话，将初始化(cx,cy）图像的中心点，使用最小二乘估算出fx，fy。如果内参数矩阵和畸变居中已知的时候，应该标定模块中的solvePnP()函数计算外参数矩阵。<br><code>CV_CALIB_FIX_PRINCIPAL_POINT</code>：在进行优化时会固定光轴点。当<code>CV_CALIB_USE_INTRINSIC_GUESS</code>参数被设置，光轴点将保持在中心或者某个输入的值。<br><code>CV_CALIB_FIX_ASPECT_RATIO</code>：固定fx/fy的比值，只将fy作为可变量，进行优化计算。当<code>CV_CALIB_USE_INTRINSIC_GUESS</code>没有被设置，fx和fy将会被忽略。只有fx/fy的比值在计算中会被用到。<br><code>CV_CALIB_ZERO_TANGENT_DIST</code>：设定切向畸变参数（p1,p2）为零。<br><code>CV_CALIB_FIX_K1,...,CV_CALIB_FIX_K6</code>：对应的径向畸变在优化中保持不变。如果设置了<code>CV_CALIB_USE_INTRINSIC_GUESS</code>参数，<br><code>CV_CALIB_RATIONAL_MODEL</code>：计算k4，k5，k6三个畸变参数。如果没有设置，则只计算其它5个畸变参数。</cv::mat></point3f></cv::mat></std::vector<cv::point2f></vector<point3f></p>
+<p>在使用<code>calibrateCamera</code>标定前，一般使用<code>findChessboardCorners()</code>函数获得棋盘标定板的角点位置。<br>还需要注意的是，在目前的opencv版本中(opencv2.4)，当需要计算获得内参数矩阵时，即不使用<code>CV_CALIB_USE_INTRINSIC_GUESS</code>参数时，要求输入的objectPoints的为平面标定模式，即Z轴都为零。否则会出错。<br>如果对<code>calibrateCamera</code>的详细算法感兴趣，可以阅读张正友的标定算法<code>A Flexible New Technique for Camera Calibration</code>。</p>
+<p>参考：<a href="http://blog.csdn.net/u010128736/article/details/52860364" target="_blank" rel="external">张正友标定算法原理详解</a></p>
+<h2 id="输出结果"><a href="#输出结果" class="headerlink" title="输出结果"></a>输出结果</h2><p>这是标定的结果txt:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line">%YAML:1.0</div><div class="line"># flags: fix_k3 + fix_principal_point + zero_tangent_dist</div><div class="line">flags: -858993460</div><div class="line">imageSize:</div><div class="line">   - 4160</div><div class="line">   - 3120</div><div class="line">cameraMatrix: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 3</div><div class="line">   dt: d</div><div class="line">   data: [ 1., 0., -4.0814182272426669e-050, 0., 1.,</div><div class="line">       -3.0815693746515338e-050, 0., 0., 1. ]</div><div class="line">distortionCoefficients: !!opencv-matrix</div><div class="line">   rows: 1</div><div class="line">   cols: 5</div><div class="line">   dt: d</div><div class="line">   data: [ -1.7596725552334470e-039, -1.9742223542906149e-032,</div><div class="line">       -9.5992726667931687e-043, -1.2704849165815392e-042,</div><div class="line">       -2.3135016474800565e-025 ]</div><div class="line">nImages: 4</div><div class="line">rotaionMatrix_0: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ -2.2294253245368134e+000, -2.2134145628601702e+000,</div><div class="line">       2.8590355451007729e-006 ]</div><div class="line">rotaionMatrix_1: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ -1.2764146958425726e+000, -2.8705923348744431e+000,</div><div class="line">       -4.3406596396882359e-006 ]</div><div class="line">rotaionMatrix_2: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ -2.2227063382024927e+000, -2.2201633766868949e+000,</div><div class="line">       -1.3347201616015818e-005 ]</div><div class="line">rotaionMatrix_3: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ 2.2111938601115804e+000, 2.2316459163764946e+000,</div><div class="line">       4.6180471416584244e-006 ]</div><div class="line">translationMatrix_0: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ 3.4200870310869936e+002, 2.4306040807919166e+002,</div><div class="line">       2.1246385571383247e-001 ]</div><div class="line">translationMatrix_1: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ 4.6286128887778028e+002, 2.1161486421863219e+002,</div><div class="line">       2.2228181283447687e-001 ]</div><div class="line">translationMatrix_2: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ 2.7926533226345754e+002, 1.8156075879265308e+002,</div><div class="line">       1.5794331744114487e-001 ]</div><div class="line">translationMatrix_3: !!opencv-matrix</div><div class="line">   rows: 3</div><div class="line">   cols: 1</div><div class="line">   dt: d</div><div class="line">   data: [ 1.9676135116789831e+002, 1.2854536689282654e+002,</div><div class="line">       1.3296626031270212e-001 ]</div></pre></td></tr></table></figure></p>
+<p>其实就是个对网上很流行的张氏标定的OpenCV例子的封装，简单的概括就是<a href="http://blog.csdn.net/aptx704610875/article/details/48914043" target="_blank" rel="external">这样</a>。但自己写成类的形式封装了以后方便后续进行调用吧。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>谢谢老板！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="Tao Jianhao 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/alipay.jpg" alt="Tao Jianhao 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/相机标定/" rel="tag"><i class="fa fa-tag"></i> 相机标定</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/24/jobdesign/" rel="next" title="jobdesign">
+                <i class="fa fa-chevron-left"></i> jobdesign
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!--MOB SHARE BEGIN-->
+<div class="-mob-share-ui-button -mob-share-open">分享</div>
+<div class="-mob-share-ui" style="display: none">
+    <ul class="-mob-share-list">
+        <li class="-mob-share-weibo"><p>新浪微博</p></li>
+        <li class="-mob-share-tencentweibo"><p>腾讯微博</p></li>
+        <li class="-mob-share-qzone"><p>QQ空间</p></li>
+        <li class="-mob-share-qq"><p>QQ好友</p></li>
+        <li class="-mob-share-renren"><p>人人网</p></li>
+        <li class="-mob-share-kaixin"><p>开心网</p></li>
+        <li class="-mob-share-douban"><p>豆瓣</p></li>
+        <li class="-mob-share-facebook"><p>Facebook</p></li>
+        <li class="-mob-share-twitter"><p>Twitter</p></li>
+    </ul>
+    <div class="-mob-share-close">取消</div>
+</div>
+<div class="-mob-share-ui-bg"></div>
+<script id="-mob-share" src="//f1.webshare.mob.com/code/mob-share.js?appkey=21624b61d124c"></script>
+
+<!--MOB SHARE END-->
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+       
+         <div onclick="ShowGitment()" id="gitment-display-button">显示 Gitment 评论</div>
+         <div id="gitment-container" style="display:none"></div>
+       
+
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <img class="site-author-image" itemprop="image"
+              src="/images/chenmeng.jpg"
+              alt="Tao Jianhao" />
+          
+            <p class="site-author-name" itemprop="name">Tao Jianhao</p>
+            <p class="site-description motion-element" itemprop="description">我真不是神经病啊！</p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/657122411" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>GitHub</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:657122411@qq.com" target="_blank" title="E-Mail">
+                  
+                    <i class="fa fa-fw fa-qq"></i>E-Mail</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5525116792" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>微博</a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/cc1856021b07" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>简书</a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简单封装单目相机标定"><span class="nav-number">1.</span> <span class="nav-text">简单封装单目相机标定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#标定流程"><span class="nav-number">1.1.</span> <span class="nav-text">标定流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cv-calibrateCamera标定函数"><span class="nav-number">1.2.</span> <span class="nav-text">cv::calibrateCamera标定函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#输出结果"><span class="nav-number">1.3.</span> <span class="nav-text">输出结果</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tao Jianhao</span>
+
+  
+</div>
+
+
+
+	<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访问量:<span id="busuanzi_value_site_pv"></span>
+</span>
+</div>
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+   
+   
+   
+   
+   <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+   <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+   
+       <script type="text/javascript">
+           function ShowGitment(){
+               document.getElementById("gitment-display-button").style.display = "none";
+               document.getElementById("gitment-container").style.display = "block";
+               var gitment = new Gitment({
+                   id: document.location.href, 
+                   owner: '657122411',
+                   repo: '657122411.github.io',
+                   oauth: {
+                       client_id: '610e2ab1086a93df1958',
+                       client_secret: 'f175704d48f6a5976f6e93ef3c3b3345d711bc6b',
+                   }});
+               gitment.render('gitment-container');
+           }
+       </script>
+   
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("cxna1wtUcQROroCPdUuk6Az5-gzGzoHsz", "SEhWeMcdi52a1GQ55REeKCpu");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
